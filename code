@@ -1,0 +1,60 @@
+bobcat_population <- matrix(0, nrow = 16, ncol = 16)
+
+# Reproduction rate
+bobcat_population[1:2, 1] <- 0.6
+bobcat_population[3:16, 1] <- 1.15
+
+# Survival rate
+bobcat_population[1, 2] <- 0.32
+for (i in 2:15) {
+  bobcat_population[i, i+1] <- 0.68
+}
+
+t_vals <- seq(1, 51, by = 1)
+popn <- matrix(rep(NA, times = 2*length(t_vals)), nrow = 16, ncol = length(t_vals))
+
+# Initialize population for all age groups at year 0
+popn[,1] <- c(4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+
+n <- 5   # Frequency of catastrophes (in years)
+p <- 0.15  # Proportion by which reproduction rates are lowered
+
+for (t in 2:length(t_vals)) {
+  for (i in 1:16) {
+    # Calculate population for each age group at time step t
+    popn[i, t] <- sum(bobcat_population[, i] * popn[, t-1])
+  }
+  popn[1, t] <- popn[1, t] + 5  # Add 5 new bobcats to age 1
+  popn[2, t] <- popn[2, t] + 5  # Add 5 new bobcats to age 2
+  
+  if (t %% n == 0 && t >= 15) {
+    # Reduce reproduction rates in the first column by proportion p
+    bobcat_population[, 1] <- bobcat_population[, 1] * (1 - p)
+  }
+}
+
+popn <- round(popn)
+
+plot(t_vals - 1, popn[1,], type = "o", col = "lightgreen", ylim = c(0,400), xlab = "Year",
+     ylab = "Population", main = "Population of Bobcats by age class (Best case survival, worst case reproduction rate)", lwd = 2)
+
+points(t_vals - 1, popn[2,], type = "o", col = "red", pch = 19, lwd = 2)
+points(t_vals - 1, popn[3,], type = "o", col = "orange", pch = 19, lwd = 2)
+points(t_vals - 1, popn[4,], type = "o", col = "brown", pch = 19, lwd = 2)
+points(t_vals - 1, popn[5,], type = "o", col = "green", pch = 19, lwd = 2)
+points(t_vals - 1, popn[6,], type = "o", col = "blue", pch = 19, lwd = 2)
+points(t_vals - 1, popn[7,], type = "o", col = "violet", pch = 19, lwd = 2)
+points(t_vals - 1, popn[8,], type = "o", col = "cyan", pch = 19, lwd = 2)
+points(t_vals - 1, popn[9,], type = "o", col = "magenta", pch = 19, lwd = 2)
+points(t_vals - 1, popn[10,], type = "o", col = "darkred", pch = 19, lwd = 2)
+points(t_vals - 1, popn[11,], type = "o", col = "black", pch = 19, lwd = 2)
+points(t_vals - 1, popn[12,], type = "o", col = "darkgreen", pch = 19, lwd = 2)
+points(t_vals - 1, popn[13,], type = "o", col = "darkblue", pch = 19, lwd = 2)
+points(t_vals - 1, popn[14,], type = "o", col = "darkviolet", pch = 19, lwd = 2)
+points(t_vals - 1, popn[15,], type = "o", col = "darkcyan", pch = 19, lwd = 2)
+points(t_vals - 1, popn[16,], type = "o", col = "darkmagenta", pch = 19, lwd = 2)
+
+legend("topleft", legend = c(paste("Age", 1:16)), col = c("lightgreen", "red", "orange", "brown", "green", 
+                                                          "blue", "violet", "cyan", "magenta", "darkred", 
+                                                          "black", "darkgreen", "darkblue", "darkviolet", 
+                                                          "darkcyan", "darkmagenta"), lty = 1, pch = 19, cex = 1.2, lwd = 2)
